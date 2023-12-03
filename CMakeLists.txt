@@ -28,7 +28,7 @@ set(PRODUCT_NAME als)
 set(F_CPU 9000000UL)
 # CPU, you can find the list here:
 # https://gcc.gnu.org/onlinedocs/gcc/AVR-Options.html
-set(MCU avr25)
+set(MCU attiny13)
 # Default Baudrate for UART, read avr include/util/setbaud.h for usage
 set(BAUD 9600)
 
@@ -36,14 +36,12 @@ set(BAUD 9600)
 # http://eleccelerator.com/fusecalc/fusecalc.php?chip=atmega2560
 set(E_FUSE 0xFF)
 set(H_FUSE 0xFF)
-set(L_FUSE 0x6A)
+set(L_FUSE 0x7A)
 set(LOCK_BIT 0xFF)
 
 # Pass defines to compiler
 add_definitions(
     -DF_CPU=${F_CPU}
-    -DBAUD=${BAUD}
-    -D__AVR_ATtiny13__
 )
 # mmcu MUST be passed to bot the compiler and linker, this handles the linker
 set(CMAKE_EXE_LINKER_FLAGS -mmcu=${MCU})
@@ -81,6 +79,8 @@ endif()
 # Libraries
 add_subdirectory(gpio)
 add_subdirectory(interrupt)
+add_subdirectory(pwm)
+add_subdirectory(sleep)
 
 if(TARGET_GROUP STREQUAL production)
     # Executable

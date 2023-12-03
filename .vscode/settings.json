@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.scons": "python",
+        "gpio.h": "c",
+        "interrupt.h": "c"
+    }
+}

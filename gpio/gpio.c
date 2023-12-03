@@ -1,6 +1,7 @@
 #include "gpio/gpio.h" 
 
 #include <avr/io.h>
+#include <util/delay.h>
 
 static void GPIO_SetPin(volatile uint8_t* pPort, uint8_t pin);
 static void GPIO_ClearPin(volatile uint8_t* pPort, uint8_t pin);
@@ -35,6 +36,7 @@ static void GPIO_ClearPin(volatile uint8_t* pPort, uint8_t pin)
 void GPIO_Setup(void)
 {
     GPIO_InitPin(&DDRB, DDB4, OUTPUT); // Was PORTB which caused low output voltage
+    GPIO_InitPin(&DDRB, DDB3, OUTPUT);
 }
 
 void GPIO_SetBuzzer(void)
@@ -45,4 +47,27 @@ void GPIO_SetBuzzer(void)
 void GPIO_ClearBuzzer(void)
 {
     GPIO_ClearPin(&PORTB, PB4);
+}
+
+void GPIO_ToggleDebug(uint8_t num)
+{
+    for(int i = 0; i < num; i++)
+    {
+        GPIO_SetPin(&PORTB, PB3);
+        _delay_us(10);
+        GPIO_ClearPin(&PORTB, PB3);
+        _delay_us(10);
+    }
+    _delay_us(50);
+}
+
+void GPIO_SoundDebug(void)
+{
+    while(1)
+    {
+        GPIO_ClearBuzzer();
+        _delay_us(15);
+        GPIO_SetBuzzer();
+        _delay_us(15);
+    }
 }
