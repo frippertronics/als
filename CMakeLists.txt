@@ -75,17 +75,8 @@ add_subdirectory(interrupt)
 add_subdirectory(pwm)
 add_subdirectory(sleep)
 
-if(TARGET_GROUP STREQUAL production)
-    # Executable
-    add_subdirectory(als)
-elseif(TARGET_GROUP STREQUAL test)
-    # Tests
-    include(CTest)
-    add_subdirectory(extern)
-    add_subdirectory(hardware)
-    add_subdirectory(tests)
-else()
-    message(FATAL_ERROR "Please specify either production or test")
-endif()
+# Executable
+add_subdirectory(als)
+
 # Clean extra files
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PRODUCT_NAME}")

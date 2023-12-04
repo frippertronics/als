@@ -12,7 +12,7 @@
 #include "sleep/sleep.h"
 
 #define MAX_SLEEP_TIME (300)
-#define SECONDS_TO_BUZZ (2)
+#define SECONDS_TO_BUZZ (1)
 
 typedef enum
 {
@@ -21,13 +21,11 @@ typedef enum
     STATE_GET_RAND = 2,
 } fsm_states_e;
 
-static fsm_states_e state = STATE_GET_RAND;
-
 static void WDT_Setup(void)
 {
     // Enable change-mode on the WDT, disable watchdog reset
     WDTCR |= (1 << WDCE) | (0 << WDE);
-    // System clock is independent of system clock, so scale to 1 second
+    // WDT clock is independent of system clock, so scale to 1 second
     WDTCR |= (1 << WDTIE) | (0 << WDP3) | (1 << WDP2) | (1 << WDP1) | (0 << WDP0);
 }
 
@@ -41,8 +39,14 @@ static uint16_t rand_get(void)
     return (rand() % (MAX_SLEEP_TIME + 1));
 }
 
-static void init(void)
+int main(void)
 {
+    fsm_states_e state = STATE_GET_RAND;
+    uint16_t watchdog_count = 0;
+    uint16_t watchdog_count_to_trigger = 0;
+    uint16_t buzzer_cycles = 0;
+    bool buzzer_toggle = false;
+    
     // Modules
     GPIO_Setup();
     PWM_Setup();
@@ -50,19 +54,9 @@ static void init(void)
     ADC_Setup();
     WDT_Setup();
 
-    state = STATE_GET_RAND;
-
     // Enable interrupts last to avoid funky behaviour
     INT_Setup();
-}
-
-int main(void)
-{
-    uint16_t watchdog_count = 0;
-    uint16_t watchdog_count_to_trigger = 0;
-    uint16_t buzzer_cycles = 0;
-    bool buzzer_toggle = false;
-    init();
+    
     for(;;)
     {
         if (state == STATE_IDLE)
@@ -73,8 +67,9 @@ int main(void)
 
                 if (watchdog_count > watchdog_count_to_trigger)
                 {
+                    // The clock for the buzzer PWM runs only when the device is
+                    // sleeping in IDLE mode.
                     Sleep_SetMode(IDLE);
-                    PWM_EnableBuzzer();
                     buzzer_toggle = true;
                     watchdog_count = 0;
                     state = STATE_BUZZ;
@@ -96,11 +91,12 @@ int main(void)
                 }
                 buzzer_toggle = !buzzer_toggle;
                 buzzer_cycles++;
-
+                
+                // Buzzer runs at ~4 kHz
                 if (buzzer_cycles > (SECONDS_TO_BUZZ * 4000))
                 {
                     GPIO_ClearBuzzer();
-                    PWM_DisableBuzzer();
+                    // POWER_DOWN stops the PWM clock from running
                     Sleep_SetMode(POWER_DOWN);
                     buzzer_cycles = 0;
                     watchdog_count_to_trigger = rand_get();

@@ -47,14 +47,3 @@ void GPIO_ClearBuzzer(void)
 {
     GPIO_ClearPin(&PORTB, PB4);
 }
-
-void GPIO_SoundDebug(void)
-{
-    while(1)
-    {
-        GPIO_ClearBuzzer();
-        _delay_us(15);
-        GPIO_SetBuzzer();
-        _delay_us(15);
-    }
-}
