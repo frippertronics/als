@@ -6,5 +6,5 @@
 set(LIBRARY_FILENAME interrupt)
 
 add_library(${LIBRARY_FILENAME} OBJECT interrupt.c)
-target_link_libraries(${LIBRARY_FILENAME} PRIVATE gpio)
+target_link_libraries(${LIBRARY_FILENAME} PRIVATE gpio pwm)
 target_include_directories(${LIBRARY_FILENAME} PUBLIC ../include)

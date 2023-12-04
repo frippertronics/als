@@ -1,7 +1,5 @@
 #include "pwm/pwm.h" 
 
-#include "sleep/sleep.h"
-
 #include <avr/io.h>
 
 // The I/O CLK is 9.6 MHz by default but scaled to 1/8 = 1.2 MHz
@@ -18,13 +16,11 @@ static volatile bool s_buzzer_is_enabled = false;
 void PWM_EnableBuzzer(void)
 {
     s_buzzer_is_enabled = true;
-    Sleep_SetMode(IDLE);
 }
 
 void PWM_DisableBuzzer(void)
 {
     s_buzzer_is_enabled = false;
-    Sleep_SetMode(POWER_DOWN);
 }
 
 bool PWM_IsBuzzerEnabled(void)

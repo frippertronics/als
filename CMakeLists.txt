@@ -43,40 +43,33 @@ set(LOCK_BIT 0xFF)
 add_definitions(
     -DF_CPU=${F_CPU}
 )
-# mmcu MUST be passed to bot the compiler and linker, this handles the linker
+# mmcu MUST be passed to both the compiler and linker, this handles the linker
 set(CMAKE_EXE_LINKER_FLAGS -mmcu=${MCU})
 
-if(TARGET_GROUP STREQUAL production)
-    add_compile_options(
-        -mmcu=${MCU} # MCU
-        -std=gnu99 # C99 standard
-        -Os # optimize
-        -Wall # enable warnings
-        -Wno-main
-        -Wundef
-        -pedantic
-        -Wstrict-prototypes
-        -Werror
-        -Wfatal-errors
-        -Wl,--relax,--gc-sections
-        -Wno-unused-function
-        -funsigned-char # a few optimizations
-        -funsigned-bitfields
-        -fpack-struct
-        -fshort-enums
-        -ffunction-sections
-        -fdata-sections
-        -fno-split-wide-types
-        -fno-tree-scev-cprop
-    )
-elseif(TARGET_GROUP STREQUAL test)
-    add_compile_options(
-        -g
-        -DTEST
-    )
-endif()
+add_compile_options(
+    -mmcu=${MCU} # MCU
+    -std=gnu99 # C99 standard
+    -Os # optimize
+    -Wall # enable warnings
+    -Wno-main
+    -Wundef
+    -pedantic
+    -Wstrict-prototypes
+    -Werror
+    -Wfatal-errors
+    -Wl,--relax,--gc-sections
+    -funsigned-char # a few optimizations
+    -funsigned-bitfields
+    -fpack-struct
+    -fshort-enums
+    -ffunction-sections
+    -fdata-sections
+    -fno-split-wide-types
+    -fno-tree-scev-cprop
+)
 
 # Libraries
+add_subdirectory(adc)
 add_subdirectory(gpio)
 add_subdirectory(interrupt)
 add_subdirectory(pwm)

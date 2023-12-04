@@ -8,6 +8,10 @@
 #include "gpio/gpio.h"
 #include "pwm/pwm.h"
 
+volatile bool g_watchdog_interrupt = false;
+volatile bool g_adc_interrupt = false;
+volatile bool g_pwm_interrupt = false;
+
 void INT_Disable(void)
 {
     SREG = (0 << 7);
@@ -48,21 +52,9 @@ ISR(ANA_COMP_vect)
 }
 
 // PWM
-volatile bool buzzer_is_active = false;
 ISR(TIM0_COMPA_vect)
 {
-    if (PWM_IsBuzzerEnabled())
-    {
-        if (buzzer_is_active)
-        {
-            GPIO_ClearBuzzer();
-        }
-        else
-        {
-            GPIO_SetBuzzer();
-        }
-        buzzer_is_active = !buzzer_is_active;
-    }
+    g_pwm_interrupt = true;
 }
 
 ISR(TIM0_COMPB_vect)
@@ -70,24 +62,12 @@ ISR(TIM0_COMPB_vect)
 
 }
 
-volatile bool buzzer_enabled = false;
 ISR(WDT_vect)
 {
-    // General system timer.
-    if (buzzer_enabled)
-    {
-        GPIO_ClearBuzzer();
-        PWM_DisableBuzzer();
-    }
-    else
-    {
-        PWM_EnableBuzzer();
-        GPIO_SetBuzzer();
-    }
-    buzzer_enabled = !buzzer_enabled;
+    g_watchdog_interrupt = true;
 }
 
 ISR(ADC_vect)
 {
-
+    g_adc_interrupt = true;  
 }
