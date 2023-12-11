@@ -6,5 +6,5 @@
 set(LIBRARY_FILENAME sleep)
 
 add_library(${LIBRARY_FILENAME} OBJECT sleep.c)
-target_link_libraries(${LIBRARY_FILENAME} PRIVATE interrupt)
+target_link_libraries(${LIBRARY_FILENAME} PRIVATE board interrupt)
 target_include_directories(${LIBRARY_FILENAME} PUBLIC ../include)
