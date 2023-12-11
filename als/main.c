@@ -11,8 +11,11 @@
 #include "pwm/pwm.h"
 #include "sleep/sleep.h"
 
-#define MAX_SLEEP_TIME (300)
 #define SECONDS_TO_BUZZ (1)
+// With a sleep time of 8 seconds and a factor of 40:
+#define SLEEP_FACTOR  (40)
+#define MIN_RNG_VALUE (90)  // 8 hours
+#define MAX_RNG_VALUE (300) // 26.6 hours
 
 typedef enum
 {
@@ -25,8 +28,8 @@ static void WDT_Setup(void)
 {
     // Enable change-mode on the WDT, disable watchdog reset
     WDTCR |= (1 << WDCE) | (0 << WDE);
-    // WDT clock is independent of system clock, so scale to 1 second
-    WDTCR |= (1 << WDTIE) | (0 << WDP3) | (1 << WDP2) | (1 << WDP1) | (0 << WDP0);
+    // WDTg clock is independent of system clock, so scale to 8 seconds
+    WDTCR |= (1 << WDTIE) | (1 << WDP3) | (0 << WDP2) | (0 << WDP1) | (1 << WDP0);
 }
 
 static void rand_init(uint16_t seed)
@@ -36,7 +39,8 @@ static void rand_init(uint16_t seed)
 
 static uint16_t rand_get(void)
 {
-    return (rand() % (MAX_SLEEP_TIME + 1));
+    uint16_t rand_val = (rand() % (MAX_RNG_VALUE)) + 1;
+    return ((rand_val < MIN_RNG_VALUE) ? MIN_RNG_VALUE : rand_val);
 }
 
 int main(void)
