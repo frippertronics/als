@@ -36,6 +36,7 @@ static void GPIO_ClearPin(volatile uint8_t* pPort, uint8_t pin)
 void GPIO_Setup(void)
 {
     GPIO_InitPin(&DDRB, DDB4, OUTPUT); // Was PORTB which caused low output voltage
+    GPIO_ClearBuzzer();
 }
 
 void GPIO_SetBuzzer(void)

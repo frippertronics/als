@@ -8,7 +8,7 @@ set(CMAKE_ASM_COMPILER avr-gcc)
 
 project("als"
     VERSION 1.0
-    LANGUAGES C
+    LANGUAGES C ASM
 )
 
 # Group all AVR-related argumnts into a board-library as all other
@@ -26,7 +26,7 @@ set(L_FUSE 0x7A) # Clock divided by 9.6 -> 1.2 MHz main clock frequency
 set(LOCK_BIT 0xFF)
 
 target_compile_definitions(board INTERFACE
-    F_CPU=9600000UL # Clock rate, used for delay_ms etc.
+    F_CPU=1200000UL # Clock rate, used for delay_ms etc.
 )
 
 target_compile_options(board INTERFACE

@@ -15,7 +15,7 @@
 // With a sleep time of 8 seconds and a factor of 40:
 #define SLEEP_FACTOR  (40)
 #define MIN_RNG_VALUE (90)  // 8 hours
-#define MAX_RNG_VALUE (300) // 26.6 hours
+#define MAX_RNG_VALUE (180) // 16 hours 
 
 typedef enum
 {
@@ -40,7 +40,8 @@ static void rand_init(uint16_t seed)
 static uint16_t rand_get(void)
 {
     uint16_t rand_val = (rand() % (MAX_RNG_VALUE)) + 1;
-    return ((rand_val < MIN_RNG_VALUE) ? MIN_RNG_VALUE : rand_val);
+    rand_val = (rand_val < MIN_RNG_VALUE) ? MIN_RNG_VALUE : rand_val;
+    return (rand_val * SLEEP_FACTOR);
 }
 
 int main(void)
@@ -61,6 +62,14 @@ int main(void)
     // Enable interrupts last to avoid funky behaviour
     INT_Setup();
     
+    // Short beep to signal that init is done
+    for(int i = 0; i < 1000; i++)
+    {
+        ((i % 2) == 0) ? GPIO_SetBuzzer() : GPIO_ClearBuzzer();
+        _delay_us(50);
+    }
+    GPIO_ClearBuzzer();
+
     for(;;)
     {
         if (state == STATE_IDLE)
